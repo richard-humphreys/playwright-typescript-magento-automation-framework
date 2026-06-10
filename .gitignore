@@ -1,0 +1,7 @@
+node_modules/
+/test-results/
+/playwright-report/
+/playwright/.cache/
+.DS_Store
+./playwright-magento-framework/node_modules/*
+playwright-magento-framework/debug-category-page.png
