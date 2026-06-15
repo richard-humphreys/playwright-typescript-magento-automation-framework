@@ -1,4 +1,4 @@
-import { Locator, Page, expect } from '@playwright/test';
+import { Locator, Page, expect } from '../fixtures/test';
 
 export class MiniCart {
     readonly cartButton: Locator;

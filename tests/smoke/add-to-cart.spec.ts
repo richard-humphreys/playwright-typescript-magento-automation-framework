@@ -1,8 +1,8 @@
 import { test } from '../../fixtures/test';
-import { searchTerms } from '../../utils/testData';
+import { config } from '../../utils/testData';
 
-test.describe('Add to cart', () => {
-    test('user can add first search result to cart', async ({
+test.describe('Add to cart smoke tests', () => {
+    test('User can add first search result to cart', async ({
         homePage,
         searchPage,
         productPage,
@@ -10,7 +10,7 @@ test.describe('Add to cart', () => {
         cartPage
     }) => {
         await homePage.open();
-        await homePage.searchFor(searchTerms.configurableProduct);
+        await homePage.searchFor(config.searchTerms.configurableProduct);
 
         await searchPage.expectSearchResultsVisible();
         await searchPage.openFirstProduct();

@@ -20,15 +20,22 @@ export default defineConfig({
     },
     projects: [
         {
+            name: 'api',
+            testMatch: /tests\/api\/.*\.spec\.ts/
+        },
+        {
             name: 'chromium',
+            testMatch: /tests\/(smoke|e2e)\/.*\.spec\.ts/,
             use: { ...devices['Desktop Chrome'] }
         },
         {
             name: 'firefox',
+            testMatch: /tests\/(smoke|e2e)\/.*\.spec\.ts/,
             use: { ...devices['Desktop Firefox'] }
         },
         {
             name: 'mobile-chrome',
+            testMatch: /tests\/(smoke|e2e)\/.*\.spec\.ts/,
             use: { ...devices['Pixel 5'] }
         }
     ]

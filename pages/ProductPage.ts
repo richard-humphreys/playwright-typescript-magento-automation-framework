@@ -1,4 +1,4 @@
-import { Locator, Page, expect } from '@playwright/test';
+import { Locator, Page, expect } from '../fixtures/test';
 import { BasePage } from './BasePage';
 
 export class ProductPage extends BasePage {
@@ -33,7 +33,6 @@ export class ProductPage extends BasePage {
             for (let j = 0; j < optionCount; j++) {
                 const option = availableOptions.nth(j);
 
-                await option.scrollIntoViewIfNeeded();
                 await option.dispatchEvent('click');
                 await this.page.waitForTimeout(300);
 
