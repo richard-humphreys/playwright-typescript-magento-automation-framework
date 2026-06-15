@@ -1,7 +1,10 @@
-import { Locator, Page, expect } from '@playwright/test';
+import { Locator, Page, expect } from '../fixtures/test';
 import { BasePage } from './BasePage';
 
-export class SearchPage extends BasePage {
+export class CategoryPage extends BasePage {
+    expectSearchResultsVisible() {
+        throw new Error('Method not implemented.');
+    }
     readonly productItems: Locator;
     readonly pageTitle: Locator;
 
@@ -11,7 +14,12 @@ export class SearchPage extends BasePage {
         this.pageTitle = page.locator('h1');
     }
 
-    async expectSearchResultsVisible() {
+    async expectCategoryPageItemsVisible() {
+        await this.page.screenshot({
+            path: 'debug-category-page.png',
+            fullPage: true
+        });
+
         await expect(this.productItems.first()).toBeVisible();
     }
 

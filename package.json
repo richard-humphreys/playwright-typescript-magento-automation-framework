@@ -4,12 +4,16 @@
     "description": "Playwright TypeScript automation framework for a Magento demo storefront.",
     "scripts": {
         "test": "playwright test",
-        "test:headed": "playwright test --headed",
-        "test:ui": "playwright test --ui",
-        "report": "playwright show-report"
+        "test:e2e": "playwright test tests/e2e",
+        "test:api": "playwright test tests/api",
+        "test:smoke": "playwright test tests/smoke",
+        "test:unit": "vitest run unit"
     },
     "devDependencies": {
         "@playwright/test": "^1.52.0",
         "typescript": "^5.4.0"
+    },
+    "dependencies": {
+        "vitest": "^4.1.8"
     }
 }
