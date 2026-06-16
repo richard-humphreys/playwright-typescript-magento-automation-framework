@@ -24,6 +24,8 @@ jobs:
                   script: |
                       const body = context.payload.pull_request.body || '';
 
+                      console.log('PR Body:', body);
+
                       const beforeMatch = body.match(/before_url:\s*(https?:\/\/\S+)/i);
                       const afterMatch = body.match(/after_url:\s*(https?:\/\/\S+)/i);
 
