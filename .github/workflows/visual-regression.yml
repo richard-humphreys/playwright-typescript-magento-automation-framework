@@ -1,113 +1,114 @@
 name: Visual Regression
 
 on:
-    pull_request:
-        types: [opened, edited, synchronize, reopened]
+  issue_comment:
+    types: [created, edited]
 
 permissions:
-    contents: read
-    pull-requests: write
-    issues: write
+  contents: read
+  pull-requests: read
+  issues: write
 
 jobs:
-    visual-regression:
-        name: Run visual regression comparison
-        runs-on: ubuntu-latest
-        timeout-minutes: 20
+  visual-regression:
+    name: Run visual regression comparison
+    if: github.event.issue.pull_request
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
 
-        steps:
-            # If before and after URL's are provided within the PR body, run visual regression tests
-                - name: Extract before and after URLs
-                    id: urls
-                    uses: actions/github-script@v7
-                    with:
-                    script: |
-                    const body = context.payload.comment.body || '';
+    steps:
+      # If before and after URL's are provided within the PR's comment, run visual regression tests
+      - name: Extract before and after URLs
+        id: urls
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.comment.body || '';
 
-                    const beforeMatch = body.match(/before_url\s*:\s*(https?:\/\/\S+)/i);
-                    const afterMatch = body.match(/after_url\s*:\s*(https?:\/\/\S+)/i);
+            const beforeMatch = body.match(/before_url\s*:\s*(https?:\/\/\S+)/i);
+            const afterMatch = body.match(/after_url\s*:\s*(https?:\/\/\S+)/i);
 
-                    const beforeUrl = beforeMatch ? beforeMatch[1] : '';
-                    const afterUrl = afterMatch ? afterMatch[1] : '';
+            const beforeUrl = beforeMatch ? beforeMatch[1] : '';
+            const afterUrl = afterMatch ? afterMatch[1] : '';
 
-                    core.setOutput('before_url', beforeUrl);
-                    core.setOutput('after_url', afterUrl);
-                    core.setOutput('should_run', beforeUrl && afterUrl ? 'true' : 'false');
+            core.setOutput('before_url', beforeUrl);
+            core.setOutput('after_url', afterUrl);
+            core.setOutput('should_run', beforeUrl && afterUrl ? 'true' : 'false');
 
-            - name: Skip visual regression
-                if: steps.urls.outputs.should_run != 'true'
-                run: echo "No before_url and after_url found in PR body. Skipping visual regression."
+      - name: Skip visual regression
+        if: steps.urls.outputs.should_run != 'true'
+        run: echo "No before_url and after_url found in PR comment. Skipping visual regression."
 
-            - name: Checkout repository
-                if: steps.urls.outputs.should_run == 'true'
-                uses: actions/checkout@v4
+      - name: Checkout repository
+        if: steps.urls.outputs.should_run == 'true'
+        uses: actions/checkout@v4
 
-            - name: Setup Node.js
-                if: steps.urls.outputs.should_run == 'true'
-                uses: actions/setup-node@v4
-                with:
-                    node-version: 22
-                    cache: npm
+      - name: Setup Node.js
+        if: steps.urls.outputs.should_run == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
 
-            - name: Install dependencies
-                if: steps.urls.outputs.should_run == 'true'
-                run: npm ci
+      - name: Install dependencies
+        if: steps.urls.outputs.should_run == 'true'
+        run: npm ci
 
-            - name: Install Playwright Chromium
-                if: steps.urls.outputs.should_run == 'true'
-                run: npx playwright install --with-deps chromium
+      - name: Install Playwright Chromium
+        if: steps.urls.outputs.should_run == 'true'
+        run: npx playwright install --with-deps chromium
 
-            - name: Run visual comparison
-                if: steps.urls.outputs.should_run == 'true'
-                run: npx tsx tests/regression/visual-regression.ts
-                env:
-                    BEFORE_URL: ${{ steps.urls.outputs.before_url }}
-                    AFTER_URL: ${{ steps.urls.outputs.after_url }}
+      - name: Run visual comparison
+        if: steps.urls.outputs.should_run == 'true'
+        run: npx tsx tests/regression/visual-regression.ts
+        env:
+          BEFORE_URL: ${{ steps.urls.outputs.before_url }}
+          AFTER_URL: ${{ steps.urls.outputs.after_url }}
 
-            - name: Upload visual diff results
-                if: always() && steps.urls.outputs.should_run == 'true'
-                uses: actions/upload-artifact@v4
-                with:
-                    name: visual-regression-results
-                    path: visual-results/
-                    retention-days: 7
+      - name: Upload visual diff results
+        if: always() && steps.urls.outputs.should_run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-regression-results
+          path: visual-results/
+          retention-days: 7
 
-            - name: Comment visual regression results on PR
-                if: always() && steps.urls.outputs.should_run == 'true'
-                uses: actions/github-script@v7
-                with:
-                    script: |
-                        const fs = require('fs');
+      - name: Comment visual regression results on PR
+        if: always() && steps.urls.outputs.should_run == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
 
-                        const reportPath = 'visual-results/visual-diff-report.json';
+            const reportPath = 'visual-results/visual-diff-report.json';
 
-                        if (!fs.existsSync(reportPath)) {
-                            core.info('No visual diff report found.');
-                            return;
-                        }
+            if (!fs.existsSync(reportPath)) {
+                core.info('No visual diff report found.');
+                return;
+            }
 
-                        const results = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+            const results = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
 
-                        const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
 
-                        let body = '## Visual Regression Results\n\n';
+            let body = '## Visual Regression Results\n\n';
 
-                        if (results.length === 0) {
-                            body += 'No visual differences detected.';
-                        } else {
-                            body += `${results.length} route(s) have visual differences.\n\n`;
-                            body += 'Route | Changed Pixels\n';
+            if (results.length === 0) {
+                body += 'No visual differences detected.';
+            } else {
+                body += `${results.length} route(s) have visual differences.\n\n`;
+                body += 'Route | Changed Pixels\n';
 
-                            for (const result of results) {
-                                body += `\`${result.route}\` | ${result.diffPixels}\n`;
-                            }
+                for (const result of results) {
+                    body += `\`${result.route}\` | ${result.diffPixels}\n`;
+                }
 
-                            body += `[Download screenshots and diff artifacts](${runUrl})`;
-                        }
+                body += `[Download screenshots and diff artifacts](${runUrl})`;
+            }
 
-                        await github.rest.issues.createComment({
-                            owner: context.repo.owner,
-                            repo: context.repo.repo,
-                            issue_number: context.issue.number,
-                            body
-                        });
+            await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body
+            });
