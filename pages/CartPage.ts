@@ -11,6 +11,10 @@ export class CartPage extends BasePage {
         this.cartTitle = page.locator('h1');
     }
 
+    get emailField(): Locator {
+        return this.page.locator('input#customer-email:visible').first();
+    }
+
     async open() {
         await this.goto('/checkout/cart/');
     }
@@ -36,13 +40,11 @@ export class CartPage extends BasePage {
         }
 
         await Promise.all([
-            this.page.waitForURL(/\/cart\//, {
+            this.emailField.waitFor({
+                state: 'visible',
                 timeout: 30000
             }),
-            this.page.mouse.click( // TODO: Investigate why the regular click() method is not working for the Proceed to Checkout button
-                box.x + box.width / 2,
-                box.y + box.height / 2
-            )
+            checkoutButton.click()
         ]);
     }
 }

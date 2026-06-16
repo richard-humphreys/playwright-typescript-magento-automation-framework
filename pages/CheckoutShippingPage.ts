@@ -2,6 +2,10 @@ import { Locator, Page, expect } from '../fixtures/test';
 import { BasePage } from './BasePage';
 
 export class ShippingPage extends BasePage {
+    constructor(page: Page) {
+        super(page);
+    }
+
     get emailField(): Locator {
         return this.page.locator('input#customer-email:visible').first();
     }
@@ -46,16 +50,13 @@ export class ShippingPage extends BasePage {
         return this.page.locator('input[name="telephone"]');
     }
 
-    constructor(page: Page) {
-        super(page);
-    }
-
     async open() {
         await this.goto('/default/checkout/#shipping');
     }
 
     async completeShippingFields() {
         await expect(this.emailField).toBeVisible({ timeout: 15000 });
+
         await this.emailField.fill('test@test.com');
 
         await this.firstNameField.fill('Test');
