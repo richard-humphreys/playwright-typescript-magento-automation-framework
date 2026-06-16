@@ -11,5 +11,12 @@ export const config = {
   },
   URLs: {
     womensTops: '/women/tops-women.html'
-  }
+  },
+  visualRoutes: [
+    '/',
+    '/default/women.html',
+    '/default/women/tops-women/jackets-women.html',
+    '/zoe-tank.html',
+    '/default/checkout/cart/'
+  ]
 };
