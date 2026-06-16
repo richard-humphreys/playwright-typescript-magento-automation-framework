@@ -11,9 +11,15 @@
     },
     "devDependencies": {
         "@playwright/test": "^1.52.0",
+        "@types/node": "^25.9.3",
+        "@types/pngjs": "^6.0.5",
+        "pixelmatch": "^7.2.0",
+        "pngjs": "^7.0.0",
+        "tsx": "^4.22.4",
         "typescript": "^5.4.0"
     },
     "dependencies": {
+        "fs": "^0.0.1-security",
         "vitest": "^4.1.8"
     }
 }
