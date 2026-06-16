@@ -15,7 +15,7 @@ permissions:
 jobs:
   visual-regression:
     name: Run visual regression comparison
-    if: github.event.issue.pull_request
+    if: github.event_name == 'pull_request' || github.event.issue.pull_request
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
