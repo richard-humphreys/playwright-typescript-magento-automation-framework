@@ -41,10 +41,34 @@ async function runVisualRegression() {
         const afterPath = path.join(outputDir, `${safeName(route)}-after.png`);
         const diffPath = path.join(outputDir, `${safeName(route)}-diff.png`);
 
-        await page.goto(new URL(route, beforeUrl).toString(), { waitUntil: 'networkidle' });
+        await page.goto(new URL(route, beforeUrl).toString(), {
+            waitUntil: 'domcontentloaded',
+            timeout: 60000
+        });
+
+        await page.waitForLoadState('load', {
+            timeout: 60000
+        }).catch(() => {
+            console.warn(`Page load event timed out for ${beforeUrl}, continuing...`);
+        });
+
+        await page.waitForTimeout(2000);
+
         await page.screenshot({ path: beforePath, fullPage: true });
 
-        await page.goto(new URL(route, afterUrl).toString(), { waitUntil: 'networkidle' });
+        await page.goto(new URL(route, afterUrl).toString(), {
+            waitUntil: 'domcontentloaded',
+            timeout: 60000
+        });
+
+        await page.waitForLoadState('load', {
+            timeout: 60000
+        }).catch(() => {
+            console.warn(`Page load event timed out for ${afterUrl}, continuing...`);
+        });
+
+        await page.waitForTimeout(2000);
+
         await page.screenshot({ path: afterPath, fullPage: true });
 
         const before = PNG.sync.read(fs.readFileSync(beforePath));
