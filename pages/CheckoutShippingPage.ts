@@ -55,7 +55,10 @@ export class ShippingPage extends BasePage {
     }
 
     async completeShippingFields() {
+        console.log(await this.page.url());
+
         await expect(this.emailField).toBeVisible({ timeout: 15000 });
+
         await this.emailField.fill('test@test.com');
 
         await this.firstNameField.fill('Test');
