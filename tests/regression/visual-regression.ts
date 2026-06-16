@@ -54,7 +54,7 @@ async function runVisualRegression() {
 
         await page.waitForTimeout(2000);
 
-        await page.screenshot({ path: beforePath, fullPage: true });
+        await page.screenshot({ path: beforePath, fullPage: false });
 
         await page.goto(new URL(route, afterUrl).toString(), {
             waitUntil: 'domcontentloaded',
@@ -69,7 +69,7 @@ async function runVisualRegression() {
 
         await page.waitForTimeout(2000);
 
-        await page.screenshot({ path: afterPath, fullPage: true });
+        await page.screenshot({ path: afterPath, fullPage: false });
 
         const before = PNG.sync.read(fs.readFileSync(beforePath));
         const after = PNG.sync.read(fs.readFileSync(afterPath));
